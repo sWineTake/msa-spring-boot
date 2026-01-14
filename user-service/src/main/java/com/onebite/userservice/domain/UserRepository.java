@@ -1,6 +1,5 @@
-package com.onebite.userservice.repository;
+package com.onebite.userservice.domain;
 
-import com.onebite.userservice.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
