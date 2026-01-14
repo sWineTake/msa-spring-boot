@@ -1,0 +1,3 @@
+rootProject.name = 'msa-springboot'
+
+include 'user-service'

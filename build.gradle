@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.onebite'
+version = '0.0.1-SNAPSHOT'
+description = 'msa-springboot'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
