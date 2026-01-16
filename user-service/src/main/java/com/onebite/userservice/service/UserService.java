@@ -1,5 +1,6 @@
 package com.onebite.userservice.service;
 
+import com.onebite.userservice.client.PointClient;
 import com.onebite.userservice.domain.User;
 import com.onebite.userservice.dto.SignUpRequestDto;
 import com.onebite.userservice.domain.UserRepository;
@@ -8,16 +9,15 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final PointClient pointClient;
 
     @Transactional
     public void signUp(SignUpRequestDto signUpRequestDto) {
@@ -28,7 +28,10 @@ public class UserService {
             signUpRequestDto.getPassword()
         );
 
-        this.userRepository.save(user);
+        User saveUser = this.userRepository.save(user);
+
+        // 회원가입 완료 후 포인트 1000점 적립
+        pointClient.addPoints(saveUser.getUserId(), 1000);
 
     }
 
