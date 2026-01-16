@@ -2,3 +2,4 @@ rootProject.name = 'msa-springboot'
 
 include 'user-service'
 include 'board-service'
+include 'point-service'
