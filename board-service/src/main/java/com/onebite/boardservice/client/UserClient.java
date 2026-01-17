@@ -1,5 +1,6 @@
 package com.onebite.boardservice.client;
 
+import com.onebite.boardservice.dto.AddActivityScoreRequestDto;
 import com.onebite.boardservice.dto.UserResponseDto;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -53,6 +55,19 @@ public class UserClient {
             // 로깅 코드 추가 예정
             return Collections.emptyList();
         }
+
+    }
+
+    public void addActivityScore(Long userId, int score) {
+
+        AddActivityScoreRequestDto dto = new AddActivityScoreRequestDto(userId, score);
+
+        this.restClient.post()
+                .uri("/users/activity-score/add", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto)
+                .retrieve()
+                .toBodilessEntity();
 
     }
 

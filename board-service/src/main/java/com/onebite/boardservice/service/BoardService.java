@@ -1,5 +1,6 @@
 package com.onebite.boardservice.service;
 
+import com.onebite.boardservice.client.PointClient;
 import com.onebite.boardservice.client.UserClient;
 import com.onebite.boardservice.domain.Board;
 import com.onebite.boardservice.domain.BoardsRepository;
@@ -21,12 +22,20 @@ public class BoardService {
 
     private final BoardsRepository boardsRepository;
     private final UserClient userClient;
-
+    private final PointClient pointClient;
 
     @Transactional
     public void create(CreateBoardRequestDto dto) {
+
+        // 게시글 작성 전 100 포인트 차감
+        pointClient.deductPoints(dto.getUserId(), 100);
+
+        // 게시글 작성
         Board board = Board.of(dto.getTitle(), dto.getContent(), dto.getUserId());
         boardsRepository.save(board);
+
+        // 게시글 작성 완료 후 작성자에게 활동 점수 10점 부여
+        userClient.addActivityScore(dto.getUserId(), 10);
     }
 
     public BoardResponseDto getBoard(Long boardId) {
