@@ -5,9 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
     @Id
@@ -16,29 +23,19 @@ public class User {
     private String email;
     private String name;
     private String password;
+    private int activityScore = 0;
 
-    public User() {
+    public static User of(String email, String name, String password) {
+        User user = new User();
+        user.email = email;
+        user.name = name;
+        user.password = password;
+
+        return user;
     }
 
-    public User(String email, String name, String password) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
+    public void addActivityScore(int score) {
+        this.activityScore += score;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

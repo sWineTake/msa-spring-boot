@@ -2,6 +2,7 @@ package com.onebite.userservice.service;
 
 import com.onebite.userservice.client.PointClient;
 import com.onebite.userservice.domain.User;
+import com.onebite.userservice.dto.AddActivityScoreRequestDto;
 import com.onebite.userservice.dto.SignUpRequestDto;
 import com.onebite.userservice.domain.UserRepository;
 import com.onebite.userservice.dto.UserResponseDto;
@@ -22,7 +23,7 @@ public class UserService {
     @Transactional
     public void signUp(SignUpRequestDto signUpRequestDto) {
 
-        User user = new User(
+        User user = User.of(
             signUpRequestDto.getEmail(),
             signUpRequestDto.getName(),
             signUpRequestDto.getPassword()
@@ -53,6 +54,18 @@ public class UserService {
             .map(user ->
                 new UserResponseDto(user.getUserId(), user.getEmail(), user.getName())
             ).toList();
+
+    }
+
+    @Transactional
+    public void addActivityScore(AddActivityScoreRequestDto dto) {
+
+        User user = userRepository.findById(dto.getUserId())
+            .orElseThrow(() -> new IllegalArgumentException("유저를 찾지 못하였습니다"));
+
+        user.addActivityScore(dto.getScore());
+
+        userRepository.save(user);
 
     }
 

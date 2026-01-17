@@ -1,5 +1,6 @@
 package com.onebite.userservice.controller;
 
+import com.onebite.userservice.dto.AddActivityScoreRequestDto;
 import com.onebite.userservice.dto.SignUpRequestDto;
 import com.onebite.userservice.dto.UserResponseDto;
 import com.onebite.userservice.service.UserService;
@@ -41,6 +42,12 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> getUsersByIds(@RequestParam List<Long> userIds) {
         List<UserResponseDto> usersByIds = userService.getUsersByIds(userIds);
         return ResponseEntity.ok().body(usersByIds);
+    }
+
+    @PostMapping("/activity-score/add")
+    public ResponseEntity<Void> addActivityScore(@RequestBody AddActivityScoreRequestDto dto) {
+        userService.addActivityScore(dto);
+        return ResponseEntity.noContent().build();
     }
 
 }
