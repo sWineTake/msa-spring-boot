@@ -7,12 +7,15 @@ import com.onebite.boardservice.domain.BoardsRepository;
 import com.onebite.boardservice.dto.BoardResponseDto;
 import com.onebite.boardservice.dto.CreateBoardRequestDto;
 import com.onebite.boardservice.dto.UserResponseDto;
+import com.onebite.boardservice.event.BoardCreatedEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class BoardService {
     private final BoardsRepository boardsRepository;
     private final UserClient userClient;
     private final PointClient pointClient;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     // @Transactional
     public void create(CreateBoardRequestDto dto) {
@@ -45,7 +49,10 @@ public class BoardService {
             isBoardCreated = true;
 
             // 게시글 작성 완료 후 작성자에게 활동 점수 10점 부여
-            userClient.addActivityScore(dto.getUserId(), 10);
+            // userClient.addActivityScore(dto.getUserId(), 10);
+            BoardCreatedEvent boardCreatedEvent = new BoardCreatedEvent(dto.getUserId());
+            this.kafkaTemplate.send("board.created", toJsonString(boardCreatedEvent));
+            System.out.println("게시글 작성 완료 이벤트 실행 완료");
 
         } catch (Exception e) {
 
@@ -64,6 +71,15 @@ public class BoardService {
 
         }
 
+    }
+
+    private String toJsonString(Object o) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(o);
+        } catch (Exception e) {
+            throw new RuntimeException("Json 직렬화 실패");
+        }
     }
 
     public BoardResponseDto getBoard(Long boardId) {
