@@ -40,6 +40,8 @@ public class UserClient {
 
     }
 
+    /*
+    카프카로 Users 테이블을 Board서비스에서 관리하게되면서 따로 조회하는 로직을 사용하지않게됨 기록용으로 주석 처리
     public List<UserResponseDto> fetchUsersByIds(List<Long> ids) {
 
         try {
@@ -69,6 +71,6 @@ public class UserClient {
                 .retrieve()
                 .toBodilessEntity();
 
-    }
+    }*/
 
 }

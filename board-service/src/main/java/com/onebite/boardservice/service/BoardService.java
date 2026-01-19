@@ -4,13 +4,12 @@ import com.onebite.boardservice.client.PointClient;
 import com.onebite.boardservice.client.UserClient;
 import com.onebite.boardservice.domain.Board;
 import com.onebite.boardservice.domain.BoardsRepository;
+import com.onebite.boardservice.domain.User;
 import com.onebite.boardservice.dto.BoardResponseDto;
 import com.onebite.boardservice.dto.CreateBoardRequestDto;
 import com.onebite.boardservice.dto.UserResponseDto;
 import com.onebite.boardservice.event.BoardCreatedEvent;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -24,6 +23,7 @@ public class BoardService {
     private final BoardsRepository boardsRepository;
     private final UserClient userClient;
     private final PointClient pointClient;
+    private final UserService userService;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     // @Transactional
@@ -43,7 +43,8 @@ public class BoardService {
             isPointDeduct = true;
 
             // 게시글 작성
-            Board board = Board.of(dto.getTitle(), dto.getContent(), dto.getUserId());
+            User user = userService.findById(dto.getUserId());
+            Board board = Board.of(dto.getTitle(), dto.getContent(), user);
             Board savedBoard = boardsRepository.save(board);
             savedBoardId = savedBoard.getBoardId();
             isBoardCreated = true;
@@ -86,13 +87,14 @@ public class BoardService {
         Board board = boardsRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found"));
 
-        Optional<UserResponseDto> optionalUserResponseDto = userClient.fetchUser(board.getUserId());
+        // Optional<UserResponseDto> optionalUserResponseDto = userClient.fetchUser(board.getUser().getUserId());
+        User user = board.getUser();
 
         return new BoardResponseDto(
-            board.getUserId(),
+            user.getUserId(),
             board.getTitle(),
             board.getContent(),
-            optionalUserResponseDto.orElse(null)
+            new UserResponseDto(user.getUserId(), user.getName())
         );
 
     }
@@ -100,25 +102,14 @@ public class BoardService {
     public List<BoardResponseDto> getAllBoards() {
         List<Board> boards = boardsRepository.findAll();
 
-        List<Long> userIds = boards.stream().map(Board::getUserId).distinct().toList();
-
-        List<UserResponseDto> userResponseDtos = userClient.fetchUsersByIds(userIds);
-
-        Map<Long, UserResponseDto> userResponseDtoMap = new HashMap<>();
-        for (UserResponseDto dto : userResponseDtos) {
-            userResponseDtoMap.put(dto.getUserId(), dto);
-        }
-
         return boards.stream().map(obj ->
                 new BoardResponseDto(
                     obj.getBoardId(),
                     obj.getTitle(),
                     obj.getContent(),
-                    userResponseDtoMap.get(obj.getUserId()
+                    new UserResponseDto(obj.getUser().getUserId(), obj.getUser().getName())
                 )
-            )
-        ).toList();
-
+            ).toList();
     }
 
 }
