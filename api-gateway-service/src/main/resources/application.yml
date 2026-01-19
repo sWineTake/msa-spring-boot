@@ -11,6 +11,13 @@ spring:
               uri: http://localhost:8080
               predicates:
                 - Path=/api/users/**
+            - id: board-service-jwt
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/boards
+                - Method=POST
+              filters:
+                - JwtAuthenticationFilter
             - id: board-service
               uri: http://localhost:8081
               predicates:
@@ -19,3 +26,6 @@ spring:
 #              uri: http://localhost:8082
 #              predicates:
 #                - Path=/point/**
+
+jwt:
+  secret: twocowsong-2912ub802nfk39203l102

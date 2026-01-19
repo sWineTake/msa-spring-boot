@@ -17,7 +17,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-
 client:
   user-service:
     url: http://localhost:8080
