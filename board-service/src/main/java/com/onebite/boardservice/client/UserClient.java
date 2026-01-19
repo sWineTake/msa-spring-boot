@@ -1,17 +1,8 @@
 package com.onebite.boardservice.client;
 
-import com.onebite.boardservice.dto.AddActivityScoreRequestDto;
-import com.onebite.boardservice.dto.UserResponseDto;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 @Component
 public class UserClient {
@@ -22,12 +13,15 @@ public class UserClient {
         this.restClient = RestClient.builder().baseUrl(url).build();
     }
 
+    /*
+    카프카로 Users 테이블을 Board서비스에서 관리하게되면서 따로 조회하는 로직을 사용하지않게됨 기록용으로 주석 처리
+
     public Optional<UserResponseDto> fetchUser(Long userId) {
 
         try {
 
             UserResponseDto userResponseDto = this.restClient.get()
-                .uri("/users/{userId}", userId)
+                .uri("/internal/users/{userId}", userId)
                 .retrieve()
                 .body(UserResponseDto.class);
 
@@ -40,8 +34,6 @@ public class UserClient {
 
     }
 
-    /*
-    카프카로 Users 테이블을 Board서비스에서 관리하게되면서 따로 조회하는 로직을 사용하지않게됨 기록용으로 주석 처리
     public List<UserResponseDto> fetchUsersByIds(List<Long> ids) {
 
         try {

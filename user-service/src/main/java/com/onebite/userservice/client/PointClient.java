@@ -19,13 +19,11 @@ public class PointClient {
                 new AddPointRequestDto(userId, amount);
 
         this.restClient.post()
-            .uri("/point/add")
+            .uri("/internal/point/add")
             .contentType(MediaType.APPLICATION_JSON)
             .body(addPointRequestDto)
             .retrieve()
             .toBodilessEntity();
     }
-
-
 
 }
